@@ -4,5 +4,4 @@ __pycache__/
 *.db
 *.db-shm
 *.db-wal
-config.json
 testdb_setup.py
