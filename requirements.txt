@@ -1,0 +1,5 @@
+psycopg
+psycopg[binary]
+xlsxwriter
+pymongo
+ttkbootstrap
