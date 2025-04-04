@@ -107,17 +107,12 @@ class SyntaxHighlighter:
             return False
         if chosen_syntax == Syntax.SQL:
             entry_slice = user_entry[:9].casefold()
-            if entry_slice[:7] in ("insert ", "update ", "delete "):
+            if entry_slice.startswith(("insert ", "update ", "delete ")):
                 messagebox.showerror(
                     "Ошибка", "Редактирование данных не поддерживается"
                 )
                 return False
-            elif (
-                entry_slice[:5] == "drop "
-                or entry_slice[:6] == "alter "
-                or entry_slice[:7] == "create "
-                or entry_slice[:8] == "comment "
-            ):
+            elif entry_slice.startswith(("drop ", "alter ", "create ", "comment ")):
                 messagebox.showerror("Ошибка", "Редактирование схемы не поддерживается")
                 return False
             elif entry_slice == "truncate ":
