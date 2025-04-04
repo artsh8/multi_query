@@ -1,6 +1,5 @@
 import queue
-from collections import namedtuple
-from typing import Any
+from typing import Any, NamedTuple
 from enum import IntEnum
 import atexit
 import threading
@@ -410,11 +409,15 @@ class Stand:
         return f"Stand(name={self.name!r}, vendor={self.vendor!r}, syntax={self.syntax!r}, db={self.db!r}, checkbox={self.checkbox!r})"
 
 
-QueryTask = namedtuple("QueryTask", ["stand_name", "query_id", "query", "size"])
+class QueryTask(NamedTuple):
+    stand_name: str
+    query_id: int
+    query: str
+    size: int
 
 
-def execute_query(stand_name: str, query_id: int, query: str, size: int) -> None:
-    stand = stands[stand_name]
+def execute_query(task: QueryTask) -> None:
+    stand = stands[task.stand_name]
     try:
         stand.db.connect()
     except DBError as e:
@@ -422,21 +425,21 @@ def execute_query(stand_name: str, query_id: int, query: str, size: int) -> None
         is_error = 1
     else:
         try:
-            result = stand.db.fetchmany(query, size)
+            result = stand.db.fetchmany(task.query, task.size)
             is_error = 0
         except DBError as e:
             result = [{"error": str(e)}]
             is_error = 1
     storage = Storage(INTERNAL_DB)
     storage.connect()
-    storage.save_result(query_id, is_error, stand_name, result)
+    storage.save_result(task.query_id, is_error, task.stand_name, result)
     storage.close()
 
 
 def worker() -> None:
     while True:
         query_task = q.get()
-        execute_query(*query_task)
+        execute_query(query_task)
 
 
 @atexit.register
