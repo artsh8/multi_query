@@ -242,6 +242,13 @@ class Wgui:
             return False
         return True
 
+    @staticmethod
+    def make_pivot(results: list[tuple[str, list[dict]]]) -> list[tuple]:
+        if results and results[0] and (len(results[0][1]) == 1):
+            return [(r[0], next(iter(r[1][0].values()))) for r in results]
+        else:
+            return []
+
     def export_result(self, query_id: int) -> None:
         query_results = self.storage.results_by_query_id(query_id)
         query_syntax, query_content = self.storage.query_by_id(query_id)
@@ -250,10 +257,17 @@ class Wgui:
         query_worksheet = workbook.add_worksheet("Запрос")
         query_worksheet.write(0, 0, "Содержание запроса", bold)
         query_worksheet.write(1, 0, query_content)
-        results: map[tuple[str, list[dict]]] = map(
-            lambda x: (x[0], json.loads(x[1])), query_results
-        )
+        results: list[tuple[str, list[dict]]] = [
+            (r[0], json.loads(r[1])) for r in query_results
+        ]
         if query_syntax == Syntax.SQL:
+            if pivot := self.make_pivot(results):
+                worksheet = workbook.add_worksheet("Свод")
+                worksheet.write(0, 0, "Стенд", bold)
+                worksheet.write(0, 1, "Содержимое первой колонки", bold)
+                for pivot_row_num, pivot_row_data in enumerate(pivot, start=1):
+                    worksheet.write(pivot_row_num, 0, pivot_row_data[0])
+                    worksheet.write(pivot_row_num, 1, str(pivot_row_data[1]))
             for sheet_name, rows in results:
                 worksheet = workbook.add_worksheet(sheet_name)
                 if not rows:
