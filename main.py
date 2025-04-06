@@ -243,11 +243,11 @@ class Wgui:
         return True
 
     @staticmethod
-    def make_pivot(results: list[tuple[str, list[dict]]]) -> list[tuple]:
+    def make_pivot(results: list[tuple[str, list[dict]]]) -> list[tuple[str, Any]] | None:
         if results and results[0] and (len(results[0][1]) == 1):
             return [(r[0], next(iter(r[1][0].values()))) for r in results]
         else:
-            return []
+            return None
 
     def export_result(self, query_id: int) -> None:
         query_results = self.storage.results_by_query_id(query_id)
