@@ -290,7 +290,7 @@ class Wgui:
 
         try:
             workbook.close()
-        except PermissionError:
+        except xlsxwriter.exceptions.FileCreateError:
             messagebox.showerror(
                 "Ошибка", "Файл для записи результата должен быть закрыт"
             )
