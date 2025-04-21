@@ -348,10 +348,7 @@ class Wgui:
                 bootstyle="outline",
             )
             export_button.grid(row=n, column=3, sticky="nsew", padx=0, pady=0)
-            self.displayed_results.append(created_at_l)
-            self.displayed_results.append(content_l)
-            self.displayed_results.append(progress_l)
-            self.displayed_results.append(export_button)
+            self.displayed_results.extend((created_at_l, content_l, progress_l, export_button))
 
     def get_fetch_size(self) -> int:
         user_fetch_size = self.fetch_size.get()
@@ -376,7 +373,7 @@ class Wgui:
         if user_fetch_size < 1:
             return None
         selected_stands = [
-            stand.name for stand in stands.values() if stand.checkbox.get() == 1
+            stand.name for stand in stands.values() if stand.checkbox.get() == True
         ]
         if not selected_stands:
             messagebox.showerror(
