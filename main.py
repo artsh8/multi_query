@@ -244,7 +244,7 @@ class Wgui:
 
     @staticmethod
     def make_pivot(results: list[tuple[str, list[dict]]]) -> list[tuple[str, Any]] | None:
-        if results and results[0] and (len(results[0][1]) == 1):
+        if results and results[0] and (len(results[0][1]) == 1) and (len(results[0][1][0]) == 1):
             return [(r[0], next(iter(r[1][0].values()))) for r in results]
         else:
             return None
